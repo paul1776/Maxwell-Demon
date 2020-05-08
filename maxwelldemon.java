@@ -320,6 +320,6 @@ public class maxwelldemon extends JFrame implements ActionListener {
     }
 
     public static void main(String[] args) {
-        maximi test = new maximi();
+        maxwelldemon test = new maxwelldemon();
     }
 }
