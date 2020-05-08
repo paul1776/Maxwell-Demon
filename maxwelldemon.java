@@ -1,20 +1,25 @@
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
+import java.lang.Math.*;
 
-public class maximi extends JFrame implements ActionListener {
+public class maxwelldemon extends JFrame implements ActionListener {
 
     int wallTimes;
 
     JButton addButton;
     JButton resetButton;
+    JLabel leftTemperature;
+    JLabel rightTemperature;
     JPanel gamePanel;
     JPanel buttonPanel;
+    JPanel temperaturePanel;
     JFrame gameWindow;
 
     GameView gamePaint;
 
     Timer clicky;
+    int clicks = 0;
     FastBall[] fast;
     SlowBall[] slow;
     int fastCount;
@@ -22,7 +27,7 @@ public class maximi extends JFrame implements ActionListener {
     int totalCount;
     double deltat = 0.1; //  in seconds
 
-    public maximi() {
+    public maxwelldemon() {
         gameWindow = new JFrame("Maxwell's Demon");
         gameWindow.setSize(1000, 600);
         gameWindow.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -52,7 +57,23 @@ public class maximi extends JFrame implements ActionListener {
         buttonPanel.setLayout(new GridLayout(1,2));
 
         gameWindow.add(buttonPanel, BorderLayout.PAGE_START);
+
+        temperaturePanel = new JPanel();
+        temperaturePanel.setBackground(Color.GRAY);
+        leftTemperature = new JLabel("Left", SwingConstants.CENTER);
+        rightTemperature = new JLabel("Right", SwingConstants.CENTER);
+        leftTemperature.setText("0000");
+        rightTemperature.setText("0000");
+        leftTemperature.setFont(new Font("Courier", Font.BOLD, 15));
+        rightTemperature.setFont(new Font("Courier", Font.BOLD, 15));
+        temperaturePanel.add(leftTemperature);
+        temperaturePanel.add(rightTemperature);
+        temperaturePanel.setLayout(new GridLayout(1,2));
+
+        gameWindow.add(temperaturePanel, BorderLayout.PAGE_END);
+
         gameWindow.setVisible(true);
+
 
         gameWindow.addMouseListener(new MouseAdapter(){
             public void mousePressed( MouseEvent m ) {
@@ -146,6 +167,10 @@ public class maximi extends JFrame implements ActionListener {
             vy = Math.random() * 100 - 50;
         }
 
+        public double getX() {
+            return x;
+        }
+
         public void move( double deltat )
         {
             oldx = x; oldy = y;
@@ -223,23 +248,68 @@ public class maximi extends JFrame implements ActionListener {
         slow[slowCount++] = new SlowBall(750, 300);
     }
 
+    public double[] getTemperatures() {
+        double leftTemp;
+        double rightTemp;
+        double[] temperatures = new double[2];
+
+        int slowLeft = 0;
+        int fastLeft = 0;
+        int slowRight = 0;
+        int fastRight = 0;
+
+        for (int i = 0; i < fastCount; i++) {
+            if (fast[i].getX() < 500) { fastLeft++; }
+            else { fastRight++; }
+        }
+
+        for (int i = 0; i < slowCount; i++) {
+            if (slow[i].getX() < 500) { slowLeft++; }
+            else { slowRight++; };
+        }
+
+        leftTemp = 3 * fastLeft + 1 * slowLeft;
+        rightTemp = 3 * fastRight + 1 * slowRight;
+
+        temperatures[0] = leftTemp;
+        temperatures[1] = rightTemp;
+
+        return temperatures;
+    }
+
+    public void setTemperatures() {
+        double[] temperatures = getTemperatures();
+        leftTemperature.setText(String.valueOf(temperatures[0]));
+        rightTemperature.setText(String.valueOf(temperatures[1]));
+    }
+
     @Override
     public void actionPerformed( ActionEvent e )
     {
         if ( e.getSource()==clicky ) {
             moveAll();
+
+            if (clicks == 0) { setTemperatures(); }
+            else if (clicks > 4) { clicks = 0; }
+            else { clicks++; }
         }
         else if ( e.getSource()==resetButton ) {
-            int gameScore = 1;
+            double[] temperatures = getTemperatures();
+            double temperatureDiff = Math.abs(temperatures[0] - temperatures[1]);
+
             JOptionPane.showMessageDialog(null, "The wall was closed " + wallTimes + " times.\n" + "The final " +
-                            "temperature was " + gameScore,
+                            "difference in temperature was " + temperatureDiff,
                     "Maxwell's Demon Score", JOptionPane.INFORMATION_MESSAGE);
 
             FastBall[] reset_fast = new FastBall[1000];
             SlowBall[] reset_slow = new SlowBall[1000];
 
+            wallTimes = 0;
+
             fast = reset_fast;
+            fastCount = 0;
             slow = reset_slow;
+            slowCount = 0;
 
             addBalls();
         }
