@@ -3,49 +3,66 @@ import java.awt.event.*;
 import javax.swing.*;
 import java.lang.Math.*;
 
-public class maxwelldemon extends JFrame implements ActionListener {
+public class MaxwellDemon extends JFrame implements ActionListener {
 
-    int wallTimes;
-
-    JButton addButton;
-    JButton resetButton;
-    JLabel leftTemperature;
-    JLabel rightTemperature;
-    JPanel gamePanel;
-    JPanel buttonPanel;
-    JPanel temperaturePanel;
+    // Game Window
     JFrame gameWindow;
 
-    GameView gamePaint;
+    // Buttons at top of view
+    JPanel buttonPanel;
+    JButton addButton;
+    JButton resetButton;
 
+    // Game panel and painted view in center of screen
+    JPanel gamePanel;
+    GameView game;
+
+    // Temperature at bottom of view
+    JPanel temperaturePanel;
+    JLabel leftTemperature;
+    JLabel rightTemperature;
+
+    // Tallies number of times wall is opened
+    int wallTimes;
+
+    // Timer and click counter to manage ball movements and temperature math
     Timer clicky;
     int clicks = 0;
+
+    // Balls instantiation
     FastBall[] fast;
     SlowBall[] slow;
     int fastCount;
     int slowCount;
-    int totalCount;
+
+    // Timer multiple for clicker and ball math
     double deltat = 0.1; //  in seconds
 
-    public maxwelldemon() {
+    // MaxwellDemon default constructor
+    public MaxwellDemon() {
         gameWindow = new JFrame("Maxwell's Demon");
         gameWindow.setSize(1000, 600);
         gameWindow.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
+        // Walls opened tally set to 0
         wallTimes = 0;
+
+        // Start timer
+        clicky = new Timer((int)(1000 * deltat), this);
+        clicky.start();
+
+        // Instantiating balls and adding 4 balls to the frame
         fastCount = 0;
         slowCount = 0;
         fast = new FastBall[1000];
         slow = new SlowBall[1000];
-
         addBalls();
 
-        clicky = new Timer((int)(1000 * deltat), this);
-        clicky.start();
+        // Load gameView
+        game = new GameView();
+        gameWindow.add(game);
 
-        gamePaint = new GameView();
-        gameWindow.add(gamePaint);
-
+        // Create button panel at the top of the view
         buttonPanel = new JPanel();
         buttonPanel.setBackground(Color.GRAY);
         addButton = new JButton("Add Particles");
@@ -55,45 +72,41 @@ public class maxwelldemon extends JFrame implements ActionListener {
         buttonPanel.add(addButton);
         buttonPanel.add(resetButton);
         buttonPanel.setLayout(new GridLayout(1,2));
-
         gameWindow.add(buttonPanel, BorderLayout.PAGE_START);
 
+        // Create temperature panel at the bottom of the view
         temperaturePanel = new JPanel();
         temperaturePanel.setBackground(Color.GRAY);
         leftTemperature = new JLabel("Left", SwingConstants.CENTER);
         rightTemperature = new JLabel("Right", SwingConstants.CENTER);
-        leftTemperature.setText("0000");
-        rightTemperature.setText("0000");
-        leftTemperature.setFont(new Font("Courier", Font.BOLD, 15));
-        rightTemperature.setFont(new Font("Courier", Font.BOLD, 15));
+        leftTemperature.setFont(new Font("Courier", Font.BOLD, 18));
+        rightTemperature.setFont(new Font("Courier", Font.BOLD, 18));
         temperaturePanel.add(leftTemperature);
         temperaturePanel.add(rightTemperature);
         temperaturePanel.setLayout(new GridLayout(1,2));
-
         gameWindow.add(temperaturePanel, BorderLayout.PAGE_END);
 
-        gameWindow.setVisible(true);
-
-
+        // Add a mouse listener to open and close the wall
         gameWindow.addMouseListener(new MouseAdapter(){
             public void mousePressed( MouseEvent m ) {
                 wallTimes++;
-                gamePaint.openWall();
-                gamePaint.repaint();
+                game.openWall();
+                game.repaint();
             }
             public void mouseReleased( MouseEvent m) {
-                gamePaint.closeWall();
-                gamePaint.repaint();
+                game.closeWall();
+                game.repaint();
             }
         });
+
+        // Set all changes to visible
+        gameWindow.setVisible(true);
     }
 
+    // GameView class to build the central game view
     public class GameView extends JComponent {
+        // to track wall status
         private boolean haveWall = true;
-
-        public void changeWall() {
-            haveWall = !haveWall;
-        }
 
         public void openWall() {
             haveWall = false;
@@ -110,14 +123,16 @@ public class maxwelldemon extends JFrame implements ActionListener {
         public void paintComponent(Graphics g) {
             super.paintComponent(g); // call to JFrame paintComponent()
 
+            // Creates central green rectangle
             g.setColor(Color.green);
             g.fillRect(50, 80, 900, 440);
 
+            // Creates the two room labels
             g.setColor(Color.black);
-
             g.drawString("Left Room", 50, 75);
             g.drawString("Right Room", 879, 75);
 
+            // Draws wall
             if (getWallStatus()) {
                 g.setColor(Color.black);
                 g.drawLine(499, 0, 499, 600);
@@ -125,6 +140,7 @@ public class maxwelldemon extends JFrame implements ActionListener {
                 g.drawLine(501, 0, 501, 600);
             }
 
+            // Draws abcense of wall
             if (!getWallStatus()) {
                 g.drawLine(499, 0, 499, 80);
                 g.drawLine(500, 0, 500, 80);
@@ -139,6 +155,7 @@ public class maxwelldemon extends JFrame implements ActionListener {
                 g.drawLine(501, 80, 501, 520);
             }
 
+            // Draws balls
             for ( int i=0; i<slowCount; i++) {
                 slow[i].drawMe(g);
                 fast[i].drawMe(g);
@@ -146,6 +163,7 @@ public class maxwelldemon extends JFrame implements ActionListener {
         }
     }
 
+    // Ball class to handle the balls on screen
     public class Ball
     {
         double x, y;
@@ -180,7 +198,7 @@ public class maxwelldemon extends JFrame implements ActionListener {
         }
 
         public void stayOnScreen(){
-            if (gamePaint.getWallStatus()) {
+            if (game.getWallStatus()) {
                 if (x < 55) { vx *= -1; }
                 if (y < 85) { vy *= -1; }
                 if ((x > 495) && (x < 505)) { vx *= -1; }
@@ -188,7 +206,7 @@ public class maxwelldemon extends JFrame implements ActionListener {
                 if (y > 515) { vy *= -1; }
             }
 
-            if (!gamePaint.getWallStatus()) {
+            if (!game.getWallStatus()) {
                 if (x < 55) { vx *= -1; }
                 if (y < 85) { vy *= -1; }
                 if (x > 895) { vx *= -1; }
@@ -199,6 +217,7 @@ public class maxwelldemon extends JFrame implements ActionListener {
         public void drawMe( Graphics g ) { }
     }
 
+    // FastBall inherits Ball, creates the fast balls
     public class FastBall extends Ball {
         FastBall() {
             super();
@@ -215,6 +234,7 @@ public class maxwelldemon extends JFrame implements ActionListener {
         }
     }
 
+    // SlowBall inherits Ball, creates the slow balls
     public class SlowBall extends Ball {
         SlowBall() {
             super();
@@ -231,6 +251,7 @@ public class maxwelldemon extends JFrame implements ActionListener {
         }
     }
 
+    // Moves all the balls
     public void moveAll()
     {
         for (int i=0; i<slowCount; i++ ) {
@@ -239,6 +260,7 @@ public class maxwelldemon extends JFrame implements ActionListener {
         }
     }
 
+    // Adds Balls in the center of each room and randomizes direction of travel
     public void addBalls()
     {
         fast[fastCount++] = new FastBall(250, 300);
@@ -248,6 +270,7 @@ public class maxwelldemon extends JFrame implements ActionListener {
         slow[slowCount++] = new SlowBall(750, 300);
     }
 
+    // computes the temperature of each room
     public double[] getTemperatures() {
         double leftTemp;
         double rightTemp;
@@ -277,15 +300,19 @@ public class maxwelldemon extends JFrame implements ActionListener {
         return temperatures;
     }
 
+    // Updates the two temperature JLabel at the bottom of the view with the appropriate values
     public void setTemperatures() {
         double[] temperatures = getTemperatures();
-        leftTemperature.setText(String.valueOf(temperatures[0]));
-        rightTemperature.setText(String.valueOf(temperatures[1]));
+        leftTemperature.setText(String.valueOf(temperatures[0]) + " °");
+        rightTemperature.setText(String.valueOf(temperatures[1]) + " °");
     }
 
+    // Computes the response to the timer and the two buttons at the top of the view
     @Override
     public void actionPerformed( ActionEvent e )
     {
+        // moves all balls with each click
+        // To save compute, calculates temperature every 4 clicks
         if ( e.getSource()==clicky ) {
             moveAll();
 
@@ -316,10 +343,11 @@ public class maxwelldemon extends JFrame implements ActionListener {
         else if ( e.getSource()==addButton ) {
             addBalls();
         }
-        gamePaint.repaint();
+        game.repaint();
     }
 
+    // Main function for the Maxwell Class. Creates an instance.
     public static void main(String[] args) {
-        maxwelldemon test = new maxwelldemon();
+        MaxwellDemon test = new MaxwellDemon();
     }
 }
