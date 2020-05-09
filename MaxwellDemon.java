@@ -312,12 +312,12 @@ public class MaxwellDemon extends JFrame implements ActionListener {
     public void actionPerformed( ActionEvent e )
     {
         // moves all balls with each click
-        // To save compute, calculates temperature every 4 clicks
+        // To save compute, calculates temperature every 20 clicks
         if ( e.getSource()==clicky ) {
             moveAll();
 
             if (clicks == 0) { setTemperatures(); }
-            else if (clicks > 4) { clicks = 0; }
+            else if (clicks > 20) { clicks = 0; }
             else { clicks++; }
         }
         else if ( e.getSource()==resetButton ) {
