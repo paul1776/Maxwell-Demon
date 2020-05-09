@@ -14,6 +14,6 @@ Last Updated: 05/08/2020
 The game consists of two rooms divided by a door. There are two types of particles: hot (red) and cold (blue).
 A player is scored based on how great of a temperature differential they can create between the two rooms.
 
-At the top of hte screen, there are two buttons:
+At the top of the screen, there are two buttons:
     "Add Particles" adds 1 hot and 1 cold particle to each side of the door.
     "Reset" resets the game, the score and each room to only 2 particles. It also displays the player's score.
