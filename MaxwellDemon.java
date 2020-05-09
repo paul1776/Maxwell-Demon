@@ -263,9 +263,11 @@ public class MaxwellDemon extends JFrame implements ActionListener {
     // Adds Balls in the center of each room and randomizes direction of travel
     public void addBalls()
     {
+        // Creates a fast ball in each room
         fast[fastCount++] = new FastBall(250, 300);
         fast[fastCount++] = new FastBall(750, 300);
 
+        // Creates a slow ball in each room
         slow[slowCount++] = new SlowBall(250, 300);
         slow[slowCount++] = new SlowBall(750, 300);
     }

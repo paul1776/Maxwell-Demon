@@ -16,3 +16,12 @@ A player is scored based on how great of a temperature differential they can cre
 At the top of the screen, there are two buttons:
     "Add Particles" adds 1 hot and 1 cold particle to each side of the door.
     "Reset" resets the game, the score and each room to only 2 particles. It also displays the player's score.
+
+-- FUTURE UPDATES --
+1. Update the temperature models to use more accurate physics.
+2. Update the view to change the background color for each room depending on the temperature,
+    like a swatch.
+3. Track scores and create a High Score system.
+4. Create an opportunity to share score with someone.
+5. Create a control tab to directly type the number of balls to populate the rooms with,
+    rather than clicking each time.
