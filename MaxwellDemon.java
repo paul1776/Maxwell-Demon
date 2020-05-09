@@ -36,7 +36,7 @@ public class MaxwellDemon extends JFrame implements ActionListener {
     int slowCount;
 
     // Timer multiple for clicker and ball math
-    double deltat = 0.1; //  in seconds
+    double deltat = 0.05; //  in seconds
 
     // MaxwellDemon default constructor
     public MaxwellDemon() {
@@ -201,8 +201,8 @@ public class MaxwellDemon extends JFrame implements ActionListener {
             if (game.getWallStatus()) {
                 if (x < 55) { vx *= -1; }
                 if (y < 85) { vy *= -1; }
-                if ((x > 495) && (x < 505)) { vx *= -1; }
-                if (x > 895) { vx *= -1; }
+                if ((x > 493) && (x < 507)) { vx *= -1; }
+                if (x > 945) { vx *= -1; }
                 if (y > 515) { vy *= -1; }
             }
 
@@ -255,8 +255,8 @@ public class MaxwellDemon extends JFrame implements ActionListener {
     public void moveAll()
     {
         for (int i=0; i<slowCount; i++ ) {
-            slow[i].move(deltat);
-            fast[i].move(deltat*2);
+            slow[i].move(2.5*deltat);
+            fast[i].move(5*deltat);
         }
     }
 
