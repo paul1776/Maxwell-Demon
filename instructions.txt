@@ -3,9 +3,8 @@ Maxwell's Demon 1.0
 Last Updated: 05/08/2020
 
 -- TO RUN THE GAME --
-1. To download and run Maxwell's Demon, do either 1a or 1b.
-   1a. Download 'maxwelldemon.java' and type 'javac maxwelldemon.java'
-   1b. Download the Maxwell_Compiled folder
+1. Download 'maxwelldemon.java' and save it in the desired folder.
+2. Cd into the folder in the commandline/terminal and type 'javac maxwelldemon.java'
 2. In the file where you ran the javac command or in the downloaded Maxwell_Compiled folder,
     type java maxwelldemon
 3. The game should begin!
